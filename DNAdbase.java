@@ -141,13 +141,13 @@ public class DNAdbase
                 remove(command[1]);
             }
             else if (command[0].equals("print")) {
-
+                print();
             }
             else if (command[0].equals("search")) {
-
+                search(command[1]);
             }
             else {
-
+                System.out.printf("%s is not a command\n", command[0]);
             }
         }
         buffered.close();
@@ -310,7 +310,7 @@ public class DNAdbase
         }
     }
 
-    public void search(String sequenceID) throws IOException {
+    public static void search(String sequenceID) throws IOException {
         SequenceBundle find = table.get(sequenceID);
         if (find == null) {
             System.out.printf("SequenceID %s not found\n", sequenceID);
