@@ -1,0 +1,15 @@
+insert A 1
+G
+insert C 1
+T
+insert G 1
+G
+insert T 2
+CA
+
+print
+
+remove A
+remove G
+
+print

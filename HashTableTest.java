@@ -3,7 +3,7 @@ import student.TestCase;
 public class HashTableTest extends TestCase {
 
     private HashTable<String, SequenceBundle> hashTable;
-    private DNAdbase manager;
+    private MemoryManager manager;
 
     public void setUp()
     {

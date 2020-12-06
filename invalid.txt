@@ -1,0 +1,13 @@
+search AACG
+
+remove CCG
+insert    A 5
+ACGTACGTACGTACGTACGT
+insert    AT 0
+G
+   remove	GG
+
+insert C 1
+C
+insert C 4
+	GTTC

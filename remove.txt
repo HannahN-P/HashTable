@@ -1,0 +1,11 @@
+insert A 2
+GG
+insert AA 4
+GGAC
+insert AAA 6
+ACACAC
+
+remove AA
+search AA
+remove A
+search A

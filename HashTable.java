@@ -16,7 +16,7 @@ public class HashTable<K, V extends SequenceBundle> {
     private V[] table;
     private int size;
     private int capacity;
-    private DNAdbase manager;
+    private MemoryManager manager;
 
     /**
      * Creates a new HashTable with the given capacity and a MemoryManager for
@@ -25,7 +25,7 @@ public class HashTable<K, V extends SequenceBundle> {
      * @param m The MemoryManager to use
      */
     @SuppressWarnings("unchecked")
-    public HashTable(int capacity, DNAdbase m)
+    public HashTable(int capacity, MemoryManager m)
     {
         size = 0;
         this.capacity = capacity;

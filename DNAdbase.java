@@ -109,15 +109,16 @@ public class DNAdbase
     static DLL list;
     static File file;
     static File output;
-    static RandomAccessFile memory;
+    static MemoryManager memory;
 
     //~ Public  Methods .......................................................
     public static void main(String[] args) throws IOException {
         file = new File(args[0]);
         output = new File(args[1]);
         int size = Integer.parseInt(args[2]);
-        memory = new RandomAccessFile(args[3], "rw");
+        memory = new MemoryManager(args[3]);
         list = new DLL(new Node(0, size, null, null));
+        table = new HashTable<String, SequenceBundle>(size, memory);
 
         if (size % 32 != 0) {
             System.out.println(
@@ -154,34 +155,16 @@ public class DNAdbase
         reader.close();
     }
 
-    /**
-     * The function to return a sequence, given its file descriptor and length.
-     * @param loc : The location of the sequence in a file (not accounting for
-     *              padding)
-     * @param len : The length of a specific sequence, which is used by the
-     *              function to determine how many bytes should be returned
-     * @throws IOException
-     */
-    public static byte[] getSeq(int loc, int len) throws IOException {
-        memory.seek(loc + table.size());
-        byte[] builder = new byte[len];
-        for (int l = 0; l < len; l++) {
-            memory.read(builder);
-        }
-        return builder;
-    }
-
 
     //~ Private  Methods ......................................................
     private static void insert(String sequenceId, int length, String sequence)
         throws IOException {
         // A = 00 | T = 11 | C = 01 | G = 10 | padding = 00 | free = 11
 
-        if (table.canInsert(sequence)) {
+        if (!table.canInsert(sequence)) {
             return;
         }
 
-        FileWriter writer = new FileWriter(file.getName());
         if (length != sequence.length()) {
             System.out.printf("Warning: Actual sequence length (%d) "
                 + "does not match given length (%d)\n", sequence.length(),
@@ -217,17 +200,16 @@ public class DNAdbase
             }
         }
 
-        // TODO: AT THIS POINT, THE FILE LOCATION (INT) OF THE SEQUENCE ID AND
-        //       SEQUENCE ARE UNKNOWN AS BOTH ARE PASSED IN AS STRINGS.
-        SequenceBundle val = new SequenceBundle(false, new Handle(0,
-            sequenceId.length()), new Handle(0, length));
+        // Both the sequenceID and sequence are written into the memory file
+        // and the locations of where those strings, as bytes, in the file are
+        // returned.
+        int idLoc = memory.insertString(sequenceId, best);
+        int seqLoc = memory.insertString(sequence,
+            best + ASCIIConverter.ACGTtoBin(sequence).length);
+
+        SequenceBundle val = new SequenceBundle(false, new Handle(idLoc,
+            sequenceId.length()), new Handle(seqLoc, length));
         table.insert(sequence, val);
-        memory.seek(best + table.size());
-        byte[] seq;
-        // RandomAccessFile will replace bytes instead of appending or
-        // inserting when it's written to.
-        seq = ASCIIConverter.ACGTtoBin(sequence);
-        memory.write(seq);
     }
 
     private static void remove(String sequenceID) throws IOException {
@@ -281,11 +263,27 @@ public class DNAdbase
                 find = node;
                 list.length--;
             }
+
+            // The sequence ID and sequence are promptly removed from the
+            // memory file; their bytes are replaced with padding (00) bytes.
+            int idLen = ASCIIConverter.ACGTtoBin(sequenceID).length;
+            int seqLen = memory.getSeq(
+                table.get(sequenceID).getSequenceHandle().getFileLocation(),
+                table.get(
+                    sequenceID).getSequenceHandle().getSequenceLength()).length;
+            int idLoc = table.get(sequenceID).getIDHandle().getFileLocation();
+            // The individual length variables are based off the byte arrays.
+            int tLen = (int)(Math.ceil((idLen + seqLen) / 4) * 4);
+            int count = 0;
+            while (count < tLen) {
+                memory.insertString("", idLoc);
+            }
+
             // TODO: THIS IS A CALL TO HASHTABLE'S REMOVE FUNCTION; THIS CHECK
             //       IS TO ENSURE PROPER IMPLEMENTATION.
             Handle take = table.remove(sequenceID).getSequenceHandle();
             System.out.printf("Sequence Removed %s\n%s\n", sequenceID,
-                getSeq(take.getFileLocation(), take.getSequenceLength()));
+                memory.getSeq(take.getFileLocation(), take.getSequenceLength()));
         }
     }
 
@@ -312,14 +310,14 @@ public class DNAdbase
 
     public static void search(String sequenceID) throws IOException {
         SequenceBundle find = table.get(sequenceID);
-        if (find == null) {
+        if (find == null || find.getTombStone()) {
             System.out.printf("SequenceID %s not found\n", sequenceID);
         }
         else {
             Handle seq =
                 table.get(sequenceID).getSequenceHandle();
             System.out.printf("Sequence Found: %s\n",
-                getSeq(seq.getFileLocation(), seq.getSequenceLength()));
+                memory.getSeq(seq.getFileLocation(), seq.getSequenceLength()));
         }
     }
 }

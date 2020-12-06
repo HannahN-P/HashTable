@@ -1,0 +1,17 @@
+	insert	CG	5
+		CGTGC
+insert AAA 10
+ACCAGGATTA
+
+
+
+insert CAT 0
+
+insert TAG 5
+CGTGC
+
+
+search CAT
+search TAG
+search AAA
+search CG
