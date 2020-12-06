@@ -201,12 +201,17 @@ public class HashTable<K, V extends SequenceBundle> {
                     seqLength);
                 if (seqString.equals(key.toString()))
                 {
+                    System.out.printf("SequenceID %s exists\n", key);
                     return false;
                 }
             }
             pos = probe(home, i);
         }
 
+        if (!foundTombStone) {
+            System.out.printf("Bucket full. "
+                + "Sequence %s could not be inserted\n", key);
+        }
         return foundTombStone;
     }
 
@@ -267,13 +272,17 @@ public class HashTable<K, V extends SequenceBundle> {
 
     /**
      * Output array interpretation of HashTable in console
+     * @throws IOException
      */
-    public void printTable()
+    public void printTable() throws IOException
     {
         for (int h = 0; h < size; h++) {
+            // TODO: THE FOLLOWING FORMAT FOR PRINTING THE HASH SLOT OF A BLOCK
+            //       SHOULD BE CHECKED.
             System.out.printf("%s: hash slot[%d]\n",
-                table[h].getSequenceHandle().getFileLocation(),
-                table[h].getSequenceHandle().getSequenceLength());
+                manager.getSeq(table[h].getIDHandle().getFileLocation(),
+                    table[h].getIDHandle().getSequenceLength()),
+                table[h].getSequenceHandle().getFileLocation());
         }
         return;
     }

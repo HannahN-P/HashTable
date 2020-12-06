@@ -162,7 +162,7 @@ public class DNAdbase
      *              function to determine how many bytes should be returned
      * @throws IOException
      */
-    public byte[] getSeq(int loc, int len) throws IOException {
+    public static byte[] getSeq(int loc, int len) throws IOException {
         memory.seek(loc + table.size());
         byte[] builder = new byte[len];
         for (int l = 0; l < len; l++) {
@@ -177,10 +177,15 @@ public class DNAdbase
         throws IOException {
         // A = 00 | T = 11 | C = 01 | G = 10 | padding = 00 | free = 11
 
+        if (table.canInsert(sequence)) {
+            return;
+        }
 
         FileWriter writer = new FileWriter(file.getName());
         if (length != sequence.length()) {
-            // TODO: Print warning message
+            System.out.printf("Warning: Actual sequence length (%d) "
+                + "does not match given length (%d)\n", sequence.length(),
+                length);
             length = sequence.length();
         }
         int best = list.bestFit(length);
@@ -212,7 +217,11 @@ public class DNAdbase
             }
         }
 
-        // TODO: Insert into global instance of HashTable
+        // TODO: AT THIS POINT, THE FILE LOCATION (INT) OF THE SEQUENCE ID AND
+        //       SEQUENCE ARE UNKNOWN AS BOTH ARE PASSED IN AS STRINGS.
+        SequenceBundle val = new SequenceBundle(false, new Handle(0,
+            sequenceId.length()), new Handle(0, length));
+        table.insert(sequence, val);
         memory.seek(best + table.size());
         byte[] seq;
         // RandomAccessFile will replace bytes instead of appending or
@@ -224,7 +233,7 @@ public class DNAdbase
     private static void remove(String sequenceID) throws IOException {
         int pos = table.get(sequenceID).getIDHandle().getFileLocation();
         if (pos < 0) {
-            // TODO: Print warning message
+            System.out.printf("SequenceID %s not found\n", sequenceID);
         }
         else {
             Node empty = new Node(pos,
@@ -272,11 +281,15 @@ public class DNAdbase
                 find = node;
                 list.length--;
             }
-            // TODO: Remove block from global hash table
+            // TODO: THIS IS A CALL TO HASHTABLE'S REMOVE FUNCTION; THIS CHECK
+            //       IS TO ENSURE PROPER IMPLEMENTATION.
+            Handle take = table.remove(sequenceID).getSequenceHandle();
+            System.out.printf("Sequence Removed %s\n%s\n", sequenceID,
+                getSeq(take.getFileLocation(), take.getSequenceLength()));
         }
     }
 
-    private static void print() {
+    private static void print() throws IOException {
         // All stored sequences are printed out.
         System.out.print("Sequence IDs:");
         if (table.size() == 0) {
@@ -284,6 +297,7 @@ public class DNAdbase
         }
         System.out.println();
         table.printTable();
+
         // All free blocks are printed out.
         System.out.print("Free Block List:");
         if (list.length == 0) {
@@ -302,7 +316,10 @@ public class DNAdbase
             System.out.printf("SequenceID %s not found\n", sequenceID);
         }
         else {
-
+            Handle seq =
+                table.get(sequenceID).getSequenceHandle();
+            System.out.printf("Sequence Found: %s\n",
+                getSeq(seq.getFileLocation(), seq.getSequenceLength()));
         }
     }
 }
