@@ -103,12 +103,11 @@ public class HashTable<K, V extends SequenceBundle> {
                 // if an entry is not a tomb stone, then we need to check if it
                 // has the same sequenceID as the one we are trying to remove
                 // if it does, then we should tomb-stone it
-                int fileLocation = table[pos].getIDHandle().getFileLocation();
-                int seqLength = table[pos].getIDHandle().getSequenceLength();
-                byte[] sequence = manager.getSeq(fileLocation, seqLength);
-                String seqString = ASCIIConverter.BinToACGT(sequence,
-                    seqLength);
-                if (seqString.equals(key.toString()))
+                Handle idHandle = table[pos].getIDHandle();
+                byte[] seqId = manager.getSeq(idHandle);
+                String seqIdString = ASCIIConverter.BinToACGT(seqId,
+                    idHandle.getSequenceLength());
+                if (seqIdString.equals(key.toString()))
                 {
                     V seq = table[pos];
                     table[pos].setTombStone(true);
@@ -145,12 +144,11 @@ public class HashTable<K, V extends SequenceBundle> {
                 // if an entry is not a tomb stone, then we need to check if it
                 // has the same sequenceID as the one we are looking for
                 // if it does, then we have found the entry
-                int fileLocation = table[pos].getIDHandle().getFileLocation();
-                int seqLength = table[pos].getIDHandle().getSequenceLength();
-                byte[] sequence = manager.getSeq(fileLocation, seqLength);
-                String seqString = ASCIIConverter.BinToACGT(sequence,
-                    seqLength);
-                if (seqString.equals(key.toString()))
+                Handle idHandle = table[pos].getIDHandle();
+                byte[] seqId = manager.getSeq(idHandle);
+                String seqIdString = ASCIIConverter.BinToACGT(seqId,
+                    idHandle.getSequenceLength());
+                if (seqIdString.equals(key.toString()))
                 {
                     // found the matching entry; return it
                     return table[pos];
@@ -194,12 +192,11 @@ public class HashTable<K, V extends SequenceBundle> {
                 // if an entry is not a tomb stone, then we need to check if it
                 // has the same sequenceID as the one we are trying to insert
                 // if it does, then we should reject the insertion
-                int fileLocation = table[pos].getIDHandle().getFileLocation();
-                int seqLength = table[pos].getIDHandle().getSequenceLength();
-                byte[] sequence = manager.getSeq(fileLocation, seqLength);
-                String seqString = ASCIIConverter.BinToACGT(sequence,
-                    seqLength);
-                if (seqString.equals(key.toString()))
+                Handle idHandle = table[pos].getIDHandle();
+                byte[] seqId = manager.getSeq(idHandle);
+                String seqIdString = ASCIIConverter.BinToACGT(seqId,
+                    idHandle.getSequenceLength());
+                if (seqIdString.equals(key.toString()))
                 {
                     System.out.printf("SequenceID %s exists\n", key);
                     return false;
@@ -249,12 +246,11 @@ public class HashTable<K, V extends SequenceBundle> {
                 // if an entry is not a tomb stone, then we need to check if it
                 // has the same sequenceID as the one we are trying to insert
                 // if it does, then we should reject the insertion
-                int fileLocation = table[pos].getIDHandle().getFileLocation();
-                int seqLength = table[pos].getIDHandle().getSequenceLength();
-                byte[] sequence = manager.getSeq(fileLocation, seqLength);
-                String seqString = ASCIIConverter.BinToACGT(sequence,
-                    seqLength);
-                if (seqString.equals(key.toString()))
+                Handle idHandle = table[pos].getIDHandle();
+                byte[] seqId = manager.getSeq(idHandle);
+                String seqIdString = ASCIIConverter.BinToACGT(seqId,
+                    idHandle.getSequenceLength());
+                if (seqIdString.equals(key.toString()))
                 {
                     return;
                 }
@@ -277,12 +273,11 @@ public class HashTable<K, V extends SequenceBundle> {
     public void printTable() throws IOException
     {
         for (int h = 0; h < size; h++) {
-            // TODO: THE FOLLOWING FORMAT FOR PRINTING THE HASH SLOT OF A BLOCK
-            //       SHOULD BE CHECKED.
-            System.out.printf("%s: hash slot[%d]\n",
-                manager.getSeq(table[h].getIDHandle().getFileLocation(),
-                    table[h].getIDHandle().getSequenceLength()),
-                table[h].getSequenceHandle().getFileLocation());
+            if (table[h] != null && !table[h].getTombStone())
+            {
+                System.out.printf("%s: hash slot [%d]\n",
+                    manager.getSeq(table[h].getIDHandle()), h);
+            }
         }
         return;
     }
