@@ -22,11 +22,17 @@ public class MemoryManager
      */
     public byte[] getSeq(int loc, int len) throws IOException {
         memory.seek(loc);
-        String builder = "";
-        for (int l = 0; l < len; l++) {
-            builder += memory.readChar();
+        int bitsNeeded = len * 2;
+        int numBytes = (bitsNeeded / 8);
+        it (bitsNeeded % 8 != 0)
+        {
+            numBytes += 1;
         }
-        return ASCIIConverter.ACGTtoBin(builder);
+        byte[] result = new byte[numBytes];
+        
+        memory.read(result);
+        
+        return result;
     }
 
     public int insertString(String sequence, int loc)
