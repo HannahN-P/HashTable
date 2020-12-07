@@ -24,7 +24,7 @@ public class MemoryManager
         memory.seek(loc);
         int bitsNeeded = len * 2;
         int numBytes = (bitsNeeded / 8);
-        it (bitsNeeded % 8 != 0)
+        if (bitsNeeded % 8 != 0)
         {
             numBytes += 1;
         }
