@@ -101,7 +101,12 @@ public class DNAdbaseTest
         "print_mem.bin"};
         dbase.main(args);
 
-
+        assertFalse(outContent.toString().contains("Sequence IDs: none"));
+        assertTrue(outContent.toString().contains("A: hash slot [0]"));
+        assertTrue(outContent.toString().contains("C: hash slot [1]"));
+        assertTrue(outContent.toString().contains("Free Block List: none"));
+        assertTrue(outContent.toString().contains(
+            "[Block 1] Starting Byte Location: 0, Size 1 bytes"));
 
         // The memory and hash files are cleaned up.
         File memory = new File("remove_mem.bin");

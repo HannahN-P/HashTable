@@ -3,19 +3,25 @@ import java.io.*;
 public class DNAdbase
 {
     //~ Fields ................................................................
-    static HashTable<String, SequenceBundle> table;
-    static File file;
-    static File output;
-    static MemoryManager memory;
+    private static HashTable<String, SequenceBundle> table;
+    private static File file;
+    private static File output;
+    private static MemoryManager memory;
+    private static int size;
 
     //~ Public  Methods .......................................................
     public static void main(String[] args) throws IOException {
+        // The expeted argument order for the DNAdbase is:
+        // <command file> <hash file> <max size of hash table> <memory file>
         file = new File(args[0]);
         output = new File(args[1]);
-        int size = Integer.parseInt(args[2]);
-        memory = new MemoryManager(args[3]);
+        size = Integer.parseInt(args[2]);
+        memory = new MemoryManager(args[3], size);
         table = new HashTable<String, SequenceBundle>(size, memory);
 
+        // The maximum size of the code's hash table is expected to be a
+        // multiple of 32.  An issue will also occur if the command file
+        // doesn't exist in the same directory.
         if (size % 32 != 0) {
             System.out.println(
                 "Error: hashtable size must be a multiple of 32");
@@ -24,6 +30,8 @@ public class DNAdbase
             return;
         }
 
+        // The following code will scan the command file, line by line, and
+        // split each line by whitespaces.
         String line;
         FileReader reader = new FileReader(file);
         BufferedReader buffered = new BufferedReader(reader);
@@ -62,7 +70,7 @@ public class DNAdbase
             return;
         }
 
-        // check if the given sequence length matches the actual sequence 
+        // check if the given sequence length matches the actual sequence
         // length
         if (length != sequence.length()) {
             System.out.printf("Warning: Actual sequence length (%d) "
@@ -70,13 +78,13 @@ public class DNAdbase
                 length);
             length = sequence.length();
         }
-        
+
         // insert the sequenceId into the memory file
-        Handle seqIdHandle = memory.insertSeq(sequenceId);
-        
+        Handle seqIdHandle = memory.insertSeq(sequenceId, size);
+
         // insert the sequence into the memory file
-        Handle seqHandle = memory.insertSeq(sequence);
-        
+        Handle seqHandle = memory.insertSeq(sequence, size);
+
         // create a SequenceBundle object containing the two handles and insert
         // it into the hash table
         SequenceBundle val = new SequenceBundle(false, seqIdHandle, seqHandle);
@@ -84,10 +92,10 @@ public class DNAdbase
     }
 
     private static void remove(String sequenceID) throws IOException {
-        
+
         // remove the entry with the sequenceID from the hash table
         SequenceBundle removeVal = table.remove(sequenceID);
-        
+
         if (removeVal == null)
         {
             System.out.printf("SequenceID %s not found\n", sequenceID);
@@ -97,11 +105,11 @@ public class DNAdbase
             // remove the sequenceId and sequence from the memory file
             memory.removeSeq(removeVal.getIDHandle());
             byte[] seqBytes = memory.removeSeq(removeVal.getSequenceHandle());
-            String theSeq = ASCIIConverter.BinToACGT(seqBytes, 
+            String theSeq = ASCIIConverter.BinToACGT(seqBytes,
                 removeVal.getSequenceHandle().getSequenceLength());
-            
+
             System.out.printf("Sequence Removed %s\n%s\n", sequenceID, theSeq);
-        }        
+        }
     }
 
     private static void print() throws IOException {
