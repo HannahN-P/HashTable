@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.lang.reflect.Array;
 
 /**
  * A hash table with keys and values
@@ -25,12 +26,11 @@ public class HashTable<K, V extends SequenceBundle> {
      * @param m The MemoryManager to use
      */
     @SuppressWarnings("unchecked")
-    public HashTable(int capacity, MemoryManager m)
+    public HashTable(Class<V> theClass, int capacity, MemoryManager m)
     {
         size = 0;
         this.capacity = capacity;
-        Object[] temp = new Object[capacity];
-        table = (V[]) temp;
+        table = (V[])Array.newInstance(theClass, capacity);
         manager = m;
     }
 

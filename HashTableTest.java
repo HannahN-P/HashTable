@@ -8,7 +8,8 @@ public class HashTableTest extends TestCase {
     public void setUp()
     {
         // manager = new MemoryManager();
-        hashTable = new HashTable<String, SequenceBundle>(5, manager);
+        hashTable = new HashTable<String, SequenceBundle>(SequenceBundle.class, 
+            5, manager);
     }
 
 }
