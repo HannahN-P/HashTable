@@ -65,12 +65,12 @@ public class DNAdbase
                 if (!table.canInsert(sequenceId)) {
                     return;
                 }
-                Handle seqIdHandle = memory.insertSeq(sequenceId, size);
+                Handle idHandle = memory.insertSeq(sequenceId, size);
                 Handle seqHandle = memory.insertSeq(sequence, size);
 
                 // A SequenceBundle object, containing the two handles, is
                 // created and inserted into the hash table.
-                SequenceBundle val = new SequenceBundle(false, seqIdHandle,
+                SequenceBundle val = new SequenceBundle(false, idHandle,
                     seqHandle);
                 table.insert(sequenceId, val);
             }
