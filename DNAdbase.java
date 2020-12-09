@@ -46,7 +46,7 @@ public class DNAdbase
             }
 
             if (command[0].equals("insert")) {
-                line = buffered.readLine();
+                line = buffered.readLine().trim();
                 String sequenceId = command[1];
                 int length = Integer.parseInt(command[2]);
                 String sequence = line;
@@ -125,7 +125,8 @@ public class DNAdbase
                 else {
                     Handle seqHandle = find.getSequenceHandle();
                     System.out.printf("Sequence Found: %s\n",
-                        memory.getSeq(seqHandle));
+                        ASCIIConverter.BinToACGT(memory.getSeq(seqHandle), 
+                            seqHandle.getSequenceLength()));
                 }
             }
             else if (command[0].length() > 0) {
