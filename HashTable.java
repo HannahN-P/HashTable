@@ -272,11 +272,14 @@ public class HashTable<K, V extends SequenceBundle> {
      */
     public void printTable() throws IOException
     {
-        for (int h = 0; h < size; h++) {
+        for (int h = 0; h < capacity; h++) {
             if (table[h] != null && !table[h].getTombStone())
             {
+                byte[] seq = manager.getSeq(table[h].getIDHandle());
+                int lengthInLetters = table[h].getIDHandle()
+                    .getSequenceLength();
                 System.out.printf("%s: hash slot [%d]\n",
-                    manager.getSeq(table[h].getIDHandle()), h);
+                    ASCIIConverter.BinToACGT(seq, lengthInLetters), h);
             }
         }
         return;
