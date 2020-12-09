@@ -130,6 +130,9 @@ public class DNAdbase
 
         buffered.close();
         reader.close();
+
+        File mem = new File(args[3]);
+        mem.delete();
     }
 
 }

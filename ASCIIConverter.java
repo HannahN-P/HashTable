@@ -47,7 +47,7 @@ public class ASCIIConverter {
                 mask = (byte)(mask << shiftAmount);
                 result[bytePos] = (byte)(result[bytePos] | mask);
             }
-            else if (sequence.charAt(i) == 'T' || sequence.length() == 0)
+            else if (sequence.charAt(i) == 'T')
             {
                 // bits would be 11
                 byte mask = 0b00000011;

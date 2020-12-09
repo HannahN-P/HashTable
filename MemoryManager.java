@@ -82,7 +82,7 @@ class DLL {
      */
     public int bestFit(int min) {
         Node node = this.head;
-        int best = 0;
+        int best = -1;
         int i = 1;
 
         while (node != null) {
@@ -105,10 +105,19 @@ class DLL {
      public Node get(int index) {
          Node node = this.head;
          int i = 0;
-         while (node != null && i != index) {
-             node = node.next;
-             i++;
+
+         if (index > -1) {
+             while (node != null && i != index) {
+                 node = node.next;
+                 i++;
+             }
          }
+         else {
+             while (node.next != null) {
+                 node = node.next;
+             }
+         }
+
          return node;
      }
 
@@ -197,6 +206,35 @@ class DLL {
          node.length = rep.length;
 
          return true;
+     }
+
+     /**
+      * The following method is designed to remove any ending free blocks in
+      * the current list.
+      *
+      * @return if the last block in the doubly linked list for free blocks is
+      *         the last block in the memory file
+      * @throws IOException
+      */
+     public boolean isLast(RandomAccessFile file) throws IOException {
+         // The last node of the DLL is retrieved.
+         Node last = head;
+         while (last.next != null) {
+             last = last.next;
+         }
+
+         file.seek((long)(last.id + (Math.ceil((double)last.length / 4) * 4)));
+         byte[] next = new byte[4];
+         try {
+             int s = file.read(next);
+             if (s == -1) {
+                 return true;
+             }
+             return false;
+         }
+         catch (Exception e) {
+             return true;
+         }
      }
 }
 
@@ -307,9 +345,10 @@ public class MemoryManager
         // block list and the sequence won't overflow from the list.  If there
         // is no empty slot for the sequence (or sequenceID), then it should be
         // added to the back of the hash table.
-        if (best == -1 && best + str.length() > size) {
+        if (best == -1 && printLoc + str.length() <= size) {
             int loc = list.get(list.length - 1).id;
             Node last = new Node(loc, str.length(), null, null);
+            int i = 0;
 
             // The last free node is retrieved by parsing through the doubly
             // linked list.
@@ -319,9 +358,11 @@ public class MemoryManager
             }
             while (node.next != null) {
                 node = node.next;
+                i++;
             }
-            last.prev = node;
-            node.next = last;
+            list.replace(i, new Node(loc + str.length(),
+                list.get(list.length - 1).length - str.length(), node.prev,
+                node.next));
         }
         else if (best >= 0) {
             // In this case, the "best fit" free block has been found, and the
@@ -455,17 +496,20 @@ public class MemoryManager
     /**
      * This is for the print function in the DNAdbase.  It prints all of the
      * free blocks from the doubly linked list (DLL).
+     * @throws IOException
      */
-    public void printFreeBlocks()
+    public void printFreeBlocks() throws IOException
     {
         System.out.print("Free Block List:");
-        if (list.length == 0) {
+        if (list.length == 0 || (list.length == 1 && list.isLast(memory))) {
             System.out.print(" none");
         }
         System.out.println();
         for (int l = 0; l < list.length; l++) {
-            System.out.printf("[Block %d] Starting Byte Location: %d, "
-                + "Size %d bytes\n", l, list.get(l).id, list.get(l).length);
+            if (!list.isLast(memory) || l < list.length - 1) {
+                System.out.printf("[Block %d] Starting Byte Location: %d, "
+                    + "Size %d bytes\n", l, list.get(l).id, list.get(l).length);
+            }
         }
     }
 

@@ -293,4 +293,30 @@ public class HashTable<K, V extends SequenceBundle> {
     {
         return size;
     }
+
+    /**
+     * Gets the V object with the latest file pointer from the table array
+     *
+     * @return last : The object with the highest file location, denoting that
+     *                it's the last filled block (SequenceBundle) in the file
+     */
+    public SequenceBundle getLast() {
+        SequenceBundle last = new SequenceBundle(false, new Handle(0, 0),
+            new Handle(0, 0));
+        int max = 0;
+        for (int t = 0; t < table.length; t++) {
+            if (table[t] != null && table[t] instanceof SequenceBundle) {
+                if (table[t].getIDHandle().getFileLocation() > max) {
+                    max = table[t].getIDHandle().getFileLocation();
+                    last = table[t];
+                }
+                if (table[t].getSequenceHandle().getFileLocation() > max) {
+                    max = table[t].getSequenceHandle().getFileLocation();
+                    last = table[t];
+                }
+            }
+        }
+
+        return last;
+    }
 }
