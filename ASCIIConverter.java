@@ -1,11 +1,11 @@
 /**
- * ASCIIConverter converts between a binary DNA sequence and a DNA sequence 
+ * ASCIIConverter converts between a binary DNA sequence and a DNA sequence
  * represented as characters.
  * @author ryanm
  *
  */
 public class ASCIIConverter {
-    
+
     /**
      * Convert a DNA sequence from a string to a byte[].
      * @param sequence The DNA sequence as a string
@@ -20,12 +20,12 @@ public class ASCIIConverter {
             numBytes += 1;
         }
         byte[] result = new byte[numBytes];
-        
+
         for (int i = 0; i < sequence.length(); i++)
         {
             int shiftAmount = (6 - ((i % 4) * 2));
             int bytePos = i / 4;
-            
+
             if (sequence.charAt(i) == 'A')
             {
                 // bits would be 00
@@ -47,7 +47,7 @@ public class ASCIIConverter {
                 mask = (byte)(mask << shiftAmount);
                 result[bytePos] = (byte)(result[bytePos] | mask);
             }
-            else if (sequence.charAt(i) == 'T')
+            else if (sequence.charAt(i) == 'T' || sequence.length() == 0)
             {
                 // bits would be 11
                 byte mask = 0b00000011;
@@ -57,7 +57,7 @@ public class ASCIIConverter {
         }
         return result;
     }
-    
+
     /**
      * Converts a DNA sequence from a byte[] to a string.
      * @param sequence The DNA sequence as a byte[]
@@ -80,7 +80,7 @@ public class ASCIIConverter {
             int bytePos = i / 4;
             byte currBits = (byte)(sequence[bytePos] >> shiftAmount);
             currBits = (byte)(currBits & mask);
-            
+
             if (currBits == 0b00000000)
             {
                 result.append('A');
@@ -100,5 +100,5 @@ public class ASCIIConverter {
         }
         return result.toString();
     }
-    
+
 }

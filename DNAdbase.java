@@ -101,7 +101,8 @@ public class DNAdbase
                     String theSeq = ASCIIConverter.BinToACGT(seqBytes,
                         removeVal.getSequenceHandle().getSequenceLength());
 
-                    System.out.printf("Sequence Removed %s\n%s\n", sequenceID, theSeq);
+                    System.out.printf("Sequence Removed %s\n%s\n", sequenceID,
+                        theSeq);
                 }
             }
             else if (command[0].equals("print")) {
@@ -125,7 +126,7 @@ public class DNAdbase
                 else {
                     Handle seqHandle = find.getSequenceHandle();
                     System.out.printf("Sequence Found: %s\n",
-                        ASCIIConverter.BinToACGT(memory.getSeq(seqHandle), 
+                        ASCIIConverter.BinToACGT(memory.getSeq(seqHandle),
                             seqHandle.getSequenceLength()));
                 }
             }

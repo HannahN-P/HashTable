@@ -128,10 +128,17 @@ class DLL {
          while (node.next != null && node.id < ins.id) {
              node = node.next;
          }
-         node.prev.next = ins;
+         if (node.prev != null) {
+             node.prev.next = ins;
+         }
          ins.next = node;
-         ins.prev = node;
+         ins.prev = node.prev;
          node.prev = ins;
+
+         if (node == head) {
+             head = node.prev;
+         }
+         length++;
      }
 
      /**
@@ -154,6 +161,8 @@ class DLL {
          if (del.prev != null) {
              del.prev.next = del.next;
          }
+
+         length--;
          return;
      }
 
@@ -178,11 +187,11 @@ class DLL {
              node = node.next;
              i++;
          }
-         if (node.next != null) {
-             node.next.prev = rep;
-         }
          if (node.prev != null) {
              node.prev.next = rep;
+         }
+         if (node.next != null) {
+             node.next.prev = rep;
          }
          node.id = rep.id;
          node.length = rep.length;
@@ -383,7 +392,6 @@ public class MemoryManager
         Node empty = new Node(seqHandle.getFileLocation(),
             seqHandle.getSequenceLength(), null, null);
         list.insert(empty);
-        list.length++;
         // find is the free block that was just inserted.  It will be used to
         // access neighboring nodes in the doubly linked list.
         Node find = list.head;
@@ -413,12 +421,12 @@ public class MemoryManager
 
             Node node = list.head;
             int index = 0;
-            while (node.next != null && node.next.id != find.id) {
+            while (node.next != null && node.id != find.id) {
                 node = node.next;
                 index++;
             }
             list.replace(index, new Node(node.prev.id,
-                node.length + node.prev.length, node.next, node.prev));
+                node.length + node.prev.length, node.prev, node.next));
             // DLL's delete function will only remove the first node it
             // encounters, traversing from the head of the list, with the
             // same ID.
@@ -435,17 +443,11 @@ public class MemoryManager
         // (of the byte array) and its padding.
         int tLen = len;
         if (tLen % 4 != 0) {
-            tLen = (int)(Math.ceil(len / 4) * 4);
+            tLen = (int)(Math.ceil((double)len / 4) * 4);
         }
-        int count = 0;
-        //
-        while (count < tLen) {
-            // insertString will print a multiple of 4 bytes.  Although all
-            // bytes of the sequence will be replaced with padding bytes, the
-            // sequence, itself, could have more than 4 bytes.
-            this.insertString("", loc);
-            count += 4;
-        }
+        memory.seek(loc);
+        byte[] filler = new byte[tLen];
+        memory.write(filler);
 
         return result;
     }
