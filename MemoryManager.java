@@ -267,7 +267,7 @@ public class MemoryManager
         //       the length of the sequence in bytes.
         memory.write(seq);
 
-        return loc + sequence.length();
+        return loc;
     }
 
     /**
@@ -343,7 +343,7 @@ public class MemoryManager
         // string, as bytes, and the inserted sequence is returned as a Handle
         // object.
         int memLoc = this.insertString(str, printLoc);
-        return new Handle(list.get(best).id, str.length());
+        return new Handle(memLoc, str.length());
     }
 
     /**
