@@ -176,9 +176,17 @@ class DLL {
          Node node = head;
          while (i != index) {
              node = node.next;
+             i++;
          }
-         node.next.prev = rep;
-         node.prev.next = rep;
+         if (node.next != null) {
+             node.next.prev = rep;
+         }
+         if (node.prev != null) {
+             node.prev.next = rep;
+         }
+         node.id = rep.id;
+         node.length = rep.length;
+
          return true;
      }
 }
@@ -285,6 +293,7 @@ public class MemoryManager
          */
 
         int best = list.bestFit(str.length());
+        int printLoc = list.get(best).id;
         // In this case, the code cannot find the "best fit" inside of the free
         // block list and the sequence won't overflow from the list.  If there
         // is no empty slot for the sequence (or sequenceID), then it should be
@@ -308,7 +317,7 @@ public class MemoryManager
         else if (best >= 0) {
             // In this case, the "best fit" free block has been found, and the
             // remaining free space for the block is calculated.
-            int free = str.length() - list.get(best).length;
+            int free = list.get(best).length - str.length();
             if (free == 0) {
                 // If the free block is equal to the inserted block, in size,
                 // then the free block is deleted from the linked list.
@@ -333,7 +342,7 @@ public class MemoryManager
         // The string is written into the memory file and the locations of that
         // string, as bytes, and the inserted sequence is returned as a Handle
         // object.
-        int memLoc = this.insertString(str, best);
+        int memLoc = this.insertString(str, printLoc);
         return new Handle(list.get(best).id, str.length());
     }
 

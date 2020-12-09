@@ -1,13 +1,14 @@
 import java.io.*;
+import java.util.Arrays;
 
 public class DNAdbase
 {
     //~ Fields ................................................................
-//    private static HashTable<String, SequenceBundle> table;
-//    private static File file;
-//    private static File output;
-//    private static MemoryManager memory;
-//    private static int size;
+    //private static HashTable<String, SequenceBundle> table;
+    //private static File file;
+    //private static File output;
+    //private static MemoryManager memory;
+    //private static int size;
 
     //~ Public  Methods .......................................................
     public static void main(String[] args) throws IOException {
@@ -17,7 +18,7 @@ public class DNAdbase
         File output = new File(args[1]);
         int size = Integer.parseInt(args[2]);
         MemoryManager memory = new MemoryManager(args[3], size);
-        HashTable<String, SequenceBundle> table = new HashTable<String, 
+        HashTable<String, SequenceBundle> table = new HashTable<String,
             SequenceBundle>(SequenceBundle.class, size, memory);
 
         // The maximum size of the code's hash table is expected to be a
@@ -37,8 +38,13 @@ public class DNAdbase
         FileReader reader = new FileReader(file);
         BufferedReader buffered = new BufferedReader(reader);
         while ((line = buffered.readLine()) != null) {
-            // Call on helper methods
             String[] command = line.split("\\s+");
+            // This while loop accounts for leading whitespaces.
+            while (command.length > 1 && command[0].length() < 1)
+            {
+                command = Arrays.copyOfRange(command, 1, command.length);
+            }
+
             if (command[0].equals("insert")) {
                 line = buffered.readLine();
                 String sequenceId = command[1];
@@ -46,13 +52,6 @@ public class DNAdbase
                 String sequence = line;
                 // A = 00 | T = 11 | C = 01 | G = 10 | padding = 00 | free = 11
 
-                // check if the sequenceId can be inserted into the hash table
-                if (!table.canInsert(sequenceId)) {
-                    return;
-                }
-
-                // check if the given sequence length matches the actual sequence
-                // length
                 if (length != sequence.length()) {
                     System.out.printf("Warning: Actual sequence length (%d) "
                         + "does not match given length (%d)\n", sequence.length(),
@@ -60,20 +59,32 @@ public class DNAdbase
                     length = sequence.length();
                 }
 
-                // insert the sequenceId into the memory file
+                // This portion of code checks if the sequenceID can be inserted
+                // into the hash table before the sequence ID is inserted into
+                // the memory file.
+                if (!table.canInsert(sequenceId)) {
+                    return;
+                }
                 Handle seqIdHandle = memory.insertSeq(sequenceId, size);
 
-                // insert the sequence into the memory file
+                // This portion of code checks if the sequence can be inserted
+                // into the hash table before the sequence is inserted into the
+                // memory file.
+                if (!table.canInsert(sequence)) {
+                    return;
+                }
                 Handle seqHandle = memory.insertSeq(sequence, size);
 
-                // create a SequenceBundle object containing the two handles and insert
-                // it into the hash table
-                SequenceBundle val = new SequenceBundle(false, seqIdHandle, seqHandle);
+                // A SequenceBundle object, containing the two handles, is
+                // created and inserted into the hash table.
+                SequenceBundle val = new SequenceBundle(false, seqIdHandle,
+                    seqHandle);
                 table.insert(sequenceId, val);
             }
             else if (command[0].equals("remove")) {
                 String sequenceID = command[1];
-                // remove the entry with the sequenceID from the hash table
+                // The entry with the corresponding sequenceID is removed from
+                // the hash table.
                 SequenceBundle removeVal = table.remove(sequenceID);
 
                 if (removeVal == null)
@@ -82,9 +93,11 @@ public class DNAdbase
                 }
                 else
                 {
-                    // remove the sequenceId and sequence from the memory file
+                    // Both the sequence and sequence ID are subsequently
+                    // removed from the memory file.
                     memory.removeSeq(removeVal.getIDHandle());
-                    byte[] seqBytes = memory.removeSeq(removeVal.getSequenceHandle());
+                    byte[] seqBytes = memory.removeSeq(
+                        removeVal.getSequenceHandle());
                     String theSeq = ASCIIConverter.BinToACGT(seqBytes,
                         removeVal.getSequenceHandle().getSequenceLength());
 
@@ -115,10 +128,11 @@ public class DNAdbase
                         memory.getSeq(seqHandle));
                 }
             }
-            else {
+            else if (command[0].length() > 0) {
                 System.out.printf("%s is not a command\n", command[0]);
             }
         }
+
         buffered.close();
         reader.close();
     }
