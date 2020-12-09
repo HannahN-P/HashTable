@@ -66,13 +66,6 @@ public class DNAdbase
                     return;
                 }
                 Handle seqIdHandle = memory.insertSeq(sequenceId, size);
-
-                // This portion of code checks if the sequence can be inserted
-                // into the hash table before the sequence is inserted into the
-                // memory file.
-                if (!table.canInsert(sequence)) {
-                    return;
-                }
                 Handle seqHandle = memory.insertSeq(sequence, size);
 
                 // A SequenceBundle object, containing the two handles, is
