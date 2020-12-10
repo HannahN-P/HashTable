@@ -45,7 +45,7 @@ public class DNAdbase
                 command = Arrays.copyOfRange(command, 1, command.length);
             }
 
-            if (command[0].equals("insert")) {
+            if (command.length > 0 && command[0].equals("insert")) {
                 line = buffered.readLine().trim();
                 String sequenceId = command[1];
                 int length = Integer.parseInt(command[2]);
@@ -74,7 +74,7 @@ public class DNAdbase
                     seqHandle);
                 table.insert(sequenceId, val);
             }
-            else if (command[0].equals("remove")) {
+            else if (command.length > 0 && command[0].equals("remove")) {
                 String sequenceID = command[1];
                 // The entry with the corresponding sequenceID is removed from
                 // the hash table.
@@ -94,11 +94,11 @@ public class DNAdbase
                     String theSeq = ASCIIConverter.BinToACGT(seqBytes,
                         removeVal.getSequenceHandle().getSequenceLength());
 
-                    System.out.printf("Sequence Removed %s\n%s\n", sequenceID,
+                    System.out.printf("Sequence Removed %s:\n%s\n", sequenceID,
                         theSeq);
                 }
             }
-            else if (command[0].equals("print")) {
+            else if (command.length > 0 && command[0].equals("print")) {
                 // All stored sequences are printed out.
                 System.out.print("Sequence IDs:");
                 if (table.size() == 0) {
@@ -110,7 +110,7 @@ public class DNAdbase
                 // All free blocks are printed out.
                 memory.printFreeBlocks();
             }
-            else if (command[0].equals("search")) {
+            else if (command.length > 0 && command[0].equals("search")) {
                 String sequenceID = command[1];
                 SequenceBundle find = table.get(sequenceID);
                 if (find == null) {
@@ -123,16 +123,13 @@ public class DNAdbase
                             seqHandle.getSequenceLength()));
                 }
             }
-            else if (command[0].length() > 0) {
+            else if (command.length > 0 && command[0].length() > 0) {
                 System.out.printf("%s is not a command\n", command[0]);
             }
         }
 
         buffered.close();
         reader.close();
-
-        File mem = new File(args[3]);
-        mem.delete();
     }
 
 }

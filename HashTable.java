@@ -273,7 +273,9 @@ public class HashTable<K, V extends SequenceBundle> {
     public void printTable() throws IOException
     {
         for (int h = 0; h < capacity; h++) {
-            if (table[h] != null && !table[h].getTombStone())
+            if (table[h] != null && !table[h].getTombStone() &&
+                (table[h].getIDHandle() != null ||
+                table[h].getSequenceHandle() != null))
             {
                 byte[] seq = manager.getSeq(table[h].getIDHandle());
                 int lengthInLetters = table[h].getIDHandle()

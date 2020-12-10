@@ -1,242 +1,5 @@
 import java.io.*;
-
-//OVERWRITTEN/NEW DATA STRUCTURES
- // -------------------------------------------------------------------------
- /**
-  *  The node class is a simple overwritten class with unique attributes.
-  *
-  *  It has a file location stored as ID, sequence length stored as length,
-  *  a link to the previous node stored as prev, and a link to the next node
-  *  stored as next.
-  *
-  *  @author Hannah Nguyen <hanguyen>
-  *  @author Ryan Maxey <ryanmaxey6>
-  *  @version Dec 8, 2020
-  */
-class Node {
-    int id;
-    int length;
-    Node prev;
-    Node next;
-
-    /**
-     * This is the single constructor for the overwritten Node class.
-     *
-     * @param i : The file descriptor (location) of the new node
-     * @param l : The character length of the sequence or sequence ID
-     * @param prev : The previous node
-     * @param next : The next node
-     */
-    Node(int i, int l, Node p, Node n) {
-        id = i;
-        length = l;
-        prev = p;
-        next = n;
-    }
-}
-
- // -------------------------------------------------------------------------
- /**
-  *  DLL stands for doubly linked list.  It's a list of Node objects where
-  *  each node can access neighboring nodes.  It has an attribute for the
-  *  head node and an attribute for the list's length.
-  *
-  *  @author Hannah Nguyen <hanguyen>
-  *  @author Ryan Maxey <ryanmaxey6>
-  *  @version Dec 8, 2020
-  */
-class DLL {
-    Node head;
-    int length = 1;
-
-    /**
-     * The constructor only sets the head node as the starting length of the DLL
-     * will be based on whether or not the head node is null.
-     *
-     * @param h : The head (first) node of the new doubly linked list
-     */
-    DLL(Node h) {
-        head = h;
-        if (h == null) {
-            length = 0;
-        }
-        // The following will reset the starting length in the case that the
-        // head node already has next nodes.
-        Node node = head;
-        while (node.next != null) {
-            length++;
-            node = node.next;
-        }
-    }
-
-    /**
-     * bestFit will return the index of the free block slot (in the current
-     * DLL) that is most suited for a sequence.  The "best fit" is chosen by
-     * the free block with closest length that is greater or equal to the
-     * sequence's length.
-     *
-     * @param min : This is the sequence length, which would be the minimum
-     *              length for the "best fit" block
-     * @param best : The index of the "best fit" block in the DLL is stored in
-     *               the integer variable best
-     */
-    public int bestFit(int min) {
-        Node node = this.head;
-        int best = -1;
-        int i = 1;
-
-        while (node != null) {
-            if (node.length < best && node.length >= min) {
-                best = i;
-            }
-            node = node.next;
-            i++;
-        }
-
-        return best;
-    }
-
-    /**
-     * The function will return a node from the current DLL.
-     *
-     * @param index : The index, starting at 0, of the node that should be retrieved
-     * @return node : The node that corresponds to the index parameter
-     */
-     public Node get(int index) {
-         Node node = this.head;
-         int i = 0;
-
-         if (index > -1) {
-             while (node != null && i != index) {
-                 node = node.next;
-                 i++;
-             }
-         }
-         else {
-             while (node.next != null) {
-                 node = node.next;
-             }
-         }
-
-         return node;
-     }
-
-     /**
-      * The function inserts a Node object into the current DLL.  The inserted
-      * node's position is based off of its file location.
-      *
-      * The insert order is decided by parsing the DLL until the function
-      * reaches a node that has a ID that's greater or equal to the parameter
-      * node's ID.  The node that the function will stop at is the node that
-      * should go after the inserted node.
-      *
-      * @param ins : The node (with an ID and length) that should be inserted
-      */
-     public void insert(Node ins) {
-         Node node = head;
-         while (node.next != null && node.id < ins.id) {
-             node = node.next;
-         }
-         if (node.prev != null) {
-             node.prev.next = ins;
-         }
-         ins.next = node;
-         ins.prev = node.prev;
-         node.prev = ins;
-
-         if (node == head) {
-             head = node.prev;
-         }
-         length++;
-     }
-
-     /**
-      * The function removes the specified Node object from the current DLL.
-      * The node is deleted by setting the previous and next nodes of
-      * neighboring nodes.
-      *
-      * @param del : This is the node that should be deleted from the DLL.
-      */
-     public void delete(Node del) {
-         if (this.head == null || del == null) {
-             return;
-         }
-         if (this.head == del) {
-             head = del.next;
-         }
-         if (del.next != null) {
-             del.next.prev = del.prev;
-         }
-         if (del.prev != null) {
-             del.prev.next = del.next;
-         }
-
-         length--;
-         return;
-     }
-
-     /**
-      * The replace function will overwrite the attributes of a node at a
-      * specified index.
-      *
-      * @param index : index is the location of the node to be replaced in the
-      *                DLL; the index will count from 0 (the head of the DLL)
-      * @param rep : The rep node is a container for the attributes that will
-      *              be replaced in the original node
-      * @return boolean : The boolean returned will indicate the success of the
-      *                   replacement
-      */
-     public boolean replace(int index, Node rep) {
-         if (index > length - 1 || rep == null) {
-             return false;
-         }
-         int i = 0;
-         Node node = head;
-         while (i != index) {
-             node = node.next;
-             i++;
-         }
-         if (node.prev != null) {
-             node.prev.next = rep;
-         }
-         if (node.next != null) {
-             node.next.prev = rep;
-         }
-         node.id = rep.id;
-         node.length = rep.length;
-
-         return true;
-     }
-
-     /**
-      * The following method is designed to remove any ending free blocks in
-      * the current list.
-      *
-      * @return if the last block in the doubly linked list for free blocks is
-      *         the last block in the memory file
-      * @throws IOException
-      */
-     public boolean isLast(RandomAccessFile file) throws IOException {
-         // The last node of the DLL is retrieved.
-         Node last = head;
-         while (last.next != null) {
-             last = last.next;
-         }
-
-         file.seek((long)(last.id + (Math.ceil((double)last.length / 4) * 4)));
-         byte[] next = new byte[4];
-         try {
-             int s = file.read(next);
-             if (s == -1) {
-                 return true;
-             }
-             return false;
-         }
-         catch (Exception e) {
-             return true;
-         }
-     }
-}
+import java.util.*;
 
 // -------------------------------------------------------------------------
 /**
@@ -252,17 +15,19 @@ public class MemoryManager
 {
     //~ Fields ................................................................
     private RandomAccessFile memory;
-    private DLL list;
+    private LinkedList<Pair> list;
 
     //~ Constructors ..........................................................
     /**
      * The constructor sets up an instance of the MemoryManager by setting up
      * the memory file and doubly linked list of free blocks.
+     * @throws IOException
      */
-    public MemoryManager(String filename, int size) throws FileNotFoundException
+    public MemoryManager(String filename, int size) throws IOException
     {
         memory = new RandomAccessFile(filename, "rw");
-        list = new DLL(new Node(0, size, null, null));
+        new FileWriter(filename, false).close();
+        list = new LinkedList<Pair>();
     }
 
     //~Public  Methods ........................................................
@@ -309,9 +74,6 @@ public class MemoryManager
         // RandomAccessFile will replace bytes instead of appending or
         // inserting when it's written to.
         byte[] seq = ASCIIConverter.ACGTtoBin(sequence);
-        // TODO: It's uncertain on whether or not RandomAccessFile will only
-        //       overwrite X amount of bytes in the file, from loc.  X would be
-        //       the length of the sequence in bytes.
         memory.write(seq);
 
         return loc;
@@ -339,60 +101,57 @@ public class MemoryManager
          * 5. Return information about the inserted sequence and sequenceID
          */
 
-        int best = list.bestFit(str.length());
-        int printLoc = list.get(best).id;
-        // In this case, the code cannot find the "best fit" inside of the free
-        // block list and the sequence won't overflow from the list.  If there
-        // is no empty slot for the sequence (or sequenceID), then it should be
-        // added to the back of the hash table.
-        if (best == -1 && printLoc + str.length() <= size) {
-            int loc = list.get(list.length - 1).id;
-            Node last = new Node(loc, str.length(), null, null);
-            int i = 0;
-
-            // The last free node is retrieved by parsing through the doubly
-            // linked list.
-            Node node = list.head;
-            if (node == null) {
-                list.head = last;
-            }
-            while (node.next != null) {
-                node = node.next;
-                i++;
-            }
-            list.replace(i, new Node(loc + str.length(),
-                list.get(list.length - 1).length - str.length(), node.prev,
-                node.next));
-        }
-        else if (best >= 0) {
-            // In this case, the "best fit" free block has been found, and the
-            // remaining free space for the block is calculated.
-            int free = list.get(best).length - str.length();
-            if (free == 0) {
-                // If the free block is equal to the inserted block, in size,
-                // then the free block is deleted from the linked list.
-                list.delete(list.get(best));
-            }
-            else {
-                // If an inserted block is smaller than the free block it's
-                // being placed in, then the block is inserted before the
-                // remaining free space.
-                list.replace(best, new Node(list.get(best).id + str.length(),
-                    free, list.get(best).prev, list.get(best).next));
-                // Therefore, the node is replaced with a smaller size and a
-                // file descriptor offset.
-            }
+        int memLoc = 0;
+        if (list.isEmpty())
+        {
+            // The sequence is added to the end of the file in this case,
+            // because there are no free blocks available in the linked list.
+            memLoc = insertString(str, (int)memory.length());
         }
         else {
-            // This indicates that there was an error in implementing the
-            // bestFit function.
-            return null;
+            Pair bestFit = null;
+            int bits = str.length() * 2;
+            int bytes = bits / 8;
+            if (bits % 8 != 0) {
+                bytes++;
+            }
+
+            // The method searches for a free block that best fits the sequence
+            // to be inserted.
+            for (Pair block : list) {
+                if (block.getLength() > bytes && (bestFit == null ||
+                    block.getLength() < bestFit.getLength())) {
+                    bestFit = block;
+                }
+            }
+
+            // The following if statement is executed if a best fit block has
+            // been found; otherwise, the sequence is appended to the end of
+            // the memory file.
+            if (bestFit != null) {
+                // The best fit free block is then updated.
+                memLoc = insertString(str, bestFit.getFileOffset());
+                int bitsNeeded = str.length() * 2;
+                int numBytes = bitsNeeded / 8;
+                if (bitsNeeded % 8 != 0) {
+                    numBytes++;
+                }
+                bestFit.setFileOffset(bestFit.getFileOffset() + numBytes);
+                bestFit.setLength(bestFit.getLength() - numBytes);
+            }
+            else {
+                memLoc = insertString(str, (int)memory.length());
+            }
         }
 
-        // The string is written into the memory file and the locations of that
-        // string, as bytes, and the inserted sequence is returned as a Handle
-        // object.
-        int memLoc = this.insertString(str, printLoc);
+        // The free block linked list is updated to remove any filled
+        // blocks.
+        for (Pair block : list) {
+            if (block.getLength() <= 0) {
+                list.remove(block);
+            }
+        }
+
         return new Handle(memLoc, str.length());
     }
 
@@ -430,65 +189,50 @@ public class MemoryManager
         // A node to insert as a free block in the doubly linked list is
         // created.  The node is inserted into a list that should be ordered by
         // file descriptors.
-        Node empty = new Node(seqHandle.getFileLocation(),
-            seqHandle.getSequenceLength(), null, null);
-        list.insert(empty);
-        // find is the free block that was just inserted.  It will be used to
-        // access neighboring nodes in the doubly linked list.
-        Node find = list.head;
-        while (find.next != null && find.id != seqHandle.getFileLocation()) {
-            find = find.next;
-        }
-        // The following while loops will merge any neighboring free blocks.
-        // The merged free blocks will take on the sequenceID of the
-        // earliest of the blocks.
-        while (find.next != null &&
-            find.id + find.length == find.next.id) {
-
-            Node node = list.head;
-            int index = 0;
-            while (node.next != null && node.id != find.id) {
-                node = node.next;
-                index++;
-            }
-            list.replace(index, new Node(node.id,
-                node.length + node.next.length, node.next, node.prev));
-            list.delete(node.next);
-            find = node;
-            list.length--;
-        }
-        while (find.prev != null &&
-            find.prev.id + find.prev.length == find.id) {
-
-            Node node = list.head;
-            int index = 0;
-            while (node.next != null && node.id != find.id) {
-                node = node.next;
-                index++;
-            }
-            list.replace(index, new Node(node.prev.id,
-                node.length + node.prev.length, node.prev, node.next));
-            // DLL's delete function will only remove the first node it
-            // encounters, traversing from the head of the list, with the
-            // same ID.
-            list.delete(node.prev);
-            find = node;
-            list.length--;
-        }
-
+        byte[] empty = new byte[numBytes];
         // The sequence ID and sequence are promptly removed from the
         // memory file; their bytes are replaced with padding (00) bytes.
-        int len = result.length;
-        int loc = seqHandle.getFileLocation();
-        // The tLen (total length) variable is based on the individual length
-        // (of the byte array) and its padding.
-        int tLen = len;
-        if (tLen % 4 != 0) {
-            tLen = (int)(Math.ceil((double)len / 4) * 4);
+        memory.seek(memory.getFilePointer() - numBytes);
+        memory.write(empty);
+        // freeBlock is the free block that was just inserted.  It will be used
+        // to access neighboring nodes in the doubly linked list.
+        Pair freeBlock = new Pair(seqHandle.getFileLocation(), numBytes);
+
+        int pos = -1;
+        for (int i = 0; i < list.size(); i++) {
+            if (freeBlock.getFileOffset() < list.get(i).getFileOffset()) {
+                pos = i;
+                break;
+            }
         }
-        memory.seek(loc);
-        byte[] filler = new byte[tLen];
-        memory.write(filler);
+        if (pos != -1) {
+            list.add(pos, freeBlock);
+        }
+        else {
+            list.add(freeBlock);
+        }
+
+        // The following loops will merge any neighboring free blocks.
+        // The merged free blocks will take on the sequenceID of the
+        // earliest of the blocks.
+        for (int i = 0; i < list.size() - 1; i++) {
+            Pair currBlock = list.get(i);
+            Pair nextBlock = list.get(i + 1);
+            if (currBlock.getFileOffset() + currBlock.getLength() >=
+                nextBlock.getFileOffset()) {
+
+                currBlock.setLength(nextBlock.getFileOffset() -
+                    currBlock.getFileOffset() + nextBlock.getLength());
+                list.remove(nextBlock);
+                i--;
+            }
+        }
+
+        Pair lastFree = list.get(list.size() - 1);
+        if (lastFree.getFileOffset() + lastFree.getLength() == memory.length()) {
+            list.remove(lastFree);
+            memory.setLength(memory.length() - lastFree.getLength());
+        }
 
         return result;
     }
@@ -501,15 +245,14 @@ public class MemoryManager
     public void printFreeBlocks() throws IOException
     {
         System.out.print("Free Block List:");
-        if (list.length == 0 || (list.length == 1 && list.isLast(memory))) {
+        if (list.size() == 0) {
             System.out.print(" none");
         }
         System.out.println();
-        for (int l = 0; l < list.length; l++) {
-            if (!list.isLast(memory) || l < list.length - 1) {
-                System.out.printf("[Block %d] Starting Byte Location: %d, "
-                    + "Size %d bytes\n", l, list.get(l).id, list.get(l).length);
-            }
+        for (int l = 0; l < list.size(); l++) {
+            System.out.printf("[Block %d] Starting Byte Location: %d, "
+                + "Size %d bytes\n", l + 1, list.get(l).getFileOffset(),
+                list.get(l).getLength());
         }
     }
 

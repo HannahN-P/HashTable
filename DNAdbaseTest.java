@@ -3,10 +3,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import org.junit.Before;
-import org.junit.Test;
+import student.TestCase;
 
-public class DNAdbaseTest
+public class DNAdbaseTest extends TestCase
 {
 
     DNAdbase dbase;
@@ -54,7 +53,7 @@ public class DNAdbaseTest
         // All calls to the insert command should be valid with no error or
         // warning messages.  The search command is called on to check that
         // the sequences were added successfully.
-        String[] args = {"insert.txt", "insert_out.txt", "30",
+        String[] args = {"insert.txt", "insert_out.txt", "32",
             "insert_mem.bin"};
         dbase.main(args);
 
@@ -75,7 +74,7 @@ public class DNAdbaseTest
         // should not be in the outContent stream.  In order to ensure that
         // calls to the remove command work correctly, three sequences are
         // inserted first.
-        String[] args = {"remove.txt", "remove_out.txt", "20",
+        String[] args = {"remove.txt", "remove_out.txt", "32",
             "remove_mem.bin"};
         dbase.main(args);
 
@@ -97,14 +96,15 @@ public class DNAdbaseTest
     }
 
     public void testPrint() throws IOException {
-        String[] args = {"print.txt", "print_out.txt", "10",
+        String[] args = {"print.txt", "print_out.txt", "32",
         "print_mem.bin"};
         dbase.main(args);
 
         assertFalse(outContent.toString().contains("Sequence IDs: none"));
-        assertTrue(outContent.toString().contains("A: hash slot [0]"));
-        assertTrue(outContent.toString().contains("C: hash slot [1]"));
+        assertTrue(outContent.toString().contains("A: hash slot"));
+        assertTrue(outContent.toString().contains("C: hash slot"));
         assertTrue(outContent.toString().contains("Free Block List: none"));
+        assertTrue(outContent.toString().contains("Sequence Removed T:\nCA"));
         assertTrue(outContent.toString().contains(
             "[Block 1] Starting Byte Location: 0, Size 1 bytes"));
 
