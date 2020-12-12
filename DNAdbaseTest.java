@@ -9,13 +9,18 @@ import java.io.PrintStream;
  *
  * @author Ryan Maxey <ryanmaxey6>
  * @author Hannah Nguyen <hanguyen>
+ * @version December 11, 2020
  */
 public class DNAdbaseTest extends TestCase
 {
 
-    DNAdbase dbase;
+    private DNAdbase dbase;
     private ByteArrayOutputStream outContent;
 
+    /**
+     * The setup is necessary for all test cases in this file.  It does so by
+     * initiating the DNAdbase and output stream global instances.
+     */
     public void setUp()
     {
         dbase = new DNAdbase();
@@ -23,9 +28,15 @@ public class DNAdbaseTest extends TestCase
         System.setOut(new PrintStream(outContent));
     }
 
+    /**
+     * The invalid text file only includes commands that are considered invalid.
+     * Therefore, the free block list and hash table should be consistently
+     * empty.
+     * @throws IOException
+     */
     public void testInvalid() throws IOException
     {
-        assertTrue(dbase != null);
+        assertNotNull(dbase);
 
         String[] args = {"invalid.txt", "invalid_out.txt", "10",
             "invalid_mem.bin"};
@@ -54,6 +65,11 @@ public class DNAdbaseTest extends TestCase
         hash.delete();
     }
 
+    /**
+     * testInsert will go through a text files that simply calls insert and
+     * search commands.
+     * @throws IOException
+     */
     public void testInsert() throws IOException {
         // All calls to the insert command should be valid with no error or
         // warning messages.  The search command is called on to check that
@@ -74,6 +90,12 @@ public class DNAdbaseTest extends TestCase
         hash.delete();
     }
 
+    /**
+     * testRemove calls on the insert, remove, and search commands in order to
+     * affirm that DNA sequences are successfully removed from the hash table
+     * and memory file.
+     * @throws IOException
+     */
     public void testRemove() throws IOException {
         // All calls to the remove command should be valid, so certain keywords
         // should not be in the outContent stream.  In order to ensure that
@@ -100,9 +122,16 @@ public class DNAdbaseTest extends TestCase
         hash.delete();
     }
 
+    /**
+     * In addition to checking the validity of the insert and delete commands,
+     * testPrint is also meant to make sure that free and filled blocks are
+     * correctly printed in the right format.  It also handles edge cases for
+     * the print command.
+     * @throws IOException
+     */
     public void testPrint() throws IOException {
         String[] args = {"print.txt", "print_out.txt", "32",
-        "print_mem.bin"};
+            "print_mem.bin"};
         dbase.main(args);
 
         assertFalse(outContent.toString().contains("Sequence IDs: none"));

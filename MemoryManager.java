@@ -21,10 +21,10 @@ public class MemoryManager
     /**
      * The constructor sets up an instance of the MemoryManager by setting up
      * the memory file and doubly linked list of free blocks.
-     * 
-     * @param filename 	name of the file used by the memory manager to
-     * 					store strings
-     * @param size 		size of the hash table
+     *
+     * @param filename : The name of the file used by the memory manager to
+     * store strings
+     * @param size : size is the size of the static hash table
      * @throws IOException
      */
     public MemoryManager(String filename, int size) throws IOException
@@ -37,10 +37,9 @@ public class MemoryManager
     //~Public  Methods ........................................................
     /**
      * The function to return a sequence, given its file descriptor and length.
-     * @param loc : The location of the sequence in a file (not accounting for
-     *              padding)
-     * @param len : The length of a specific sequence, which is used by the
-     *              function to determine how many bytes should be returned
+     * @param seqHandle : The handle of a sequence (or sequence ID) with the
+     *                    file location of the desired string/sequence
+     * @return result : result is a byte array that represents the sequence
      * @throws IOException
      */
     public byte[] getSeq(Handle seqHandle) throws IOException {
@@ -60,7 +59,7 @@ public class MemoryManager
      * The function essentially seeks a specified location in the
      * RandomAccessFile and then appends or overwrites to the file.
      *
-     * @param sequence : The sequence (as a string) to be inserted into the 
+     * @param sequence : The sequence (as a string) to be inserted into the
      * file
      * @param loc : This integer should be the file location of the
      *              corresponding sequence parameter
@@ -73,7 +72,7 @@ public class MemoryManager
         memory.seek(loc);
         // RandomAccessFile will replace bytes instead of appending or
         // inserting when it's written to.
-        byte[] seq = ASCIIConverter.ACGTtoBin(sequence);
+        byte[] seq = ASCIIConverter.acgtToBin(sequence);
         memory.write(seq);
 
         return loc;
@@ -119,7 +118,7 @@ public class MemoryManager
                     block.getLength() < bestFit.getLength())) {
                     bestFit = block;
                     if (block.getLength() == bytes) {
-                    	break;
+                        break;
                     }
                 }
             }
@@ -174,7 +173,7 @@ public class MemoryManager
         // The string will be converted to a byte array.
         memory.seek(seqHandle.getFileLocation());
         int numBytes = byteNeeded(seqHandle.getSequenceLength());
-        
+
         byte[] result = new byte[numBytes];
         memory.read(result);
 
@@ -221,8 +220,9 @@ public class MemoryManager
         }
 
         Pair lastFree = list.get(list.size() - 1);
-        if ((lastFree.getFileOffset() + 
-        		lastFree.getLength()) == memory.length()) {
+        if ((lastFree.getFileOffset() +
+            lastFree.getLength()) == memory.length()) {
+
             list.remove(lastFree);
             memory.setLength(memory.length() - lastFree.getLength());
         }
@@ -249,11 +249,17 @@ public class MemoryManager
         }
     }
 
+    /**
+     * The function will determine how many bytes are needed when converting
+     * an ASCII string to binary.
+     *
+     * @param len : This parameter is the lengh of the string to be converted
+     * @return numBytes : The number of bytes needed to store the sequence
+     */
     private int byteNeeded(int len) {
-    	int bitsNeeded = len * 2;
+        int bitsNeeded = len * 2;
         int numBytes = (bitsNeeded / 8);
-        if (bitsNeeded % 8 != 0)
-        {
+        if (bitsNeeded % 8 != 0) {
             numBytes += 1;
         }
         return numBytes;

@@ -5,6 +5,7 @@ import student.TestCase;
  *
  * @author Ryan Maxey <ryanmaxey6>
  * @author Hannah Nguyen <hanguyen>
+ * @version December 11, 2020
  */
 public class HandleTest extends TestCase {
 
@@ -23,9 +24,9 @@ public class HandleTest extends TestCase {
      */
     public void testSetFileLocation()
     {
-        assertTrue(handle.getFileLocation() == 100);
+        assertEquals(handle.getFileLocation(), 100);
         handle.setFileLocation(125);
-        assertTrue(handle.getFileLocation() == 125);
+        assertEquals(handle.getFileLocation(), 125);
     }
 
     /**
@@ -33,9 +34,9 @@ public class HandleTest extends TestCase {
      */
     public void testSetSequenceLength()
     {
-        assertTrue(handle.getSequenceLength() == 50);
+        assertEquals(handle.getSequenceLength(), 50);
         handle.setSequenceLength(40);
-        assertTrue(handle.getSequenceLength() == 40);
+        assertEquals(handle.getSequenceLength(), 40);
     }
 
 }

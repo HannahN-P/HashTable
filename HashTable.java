@@ -8,6 +8,7 @@ import java.lang.reflect.Array;
  *
  * @author Ryan Maxey <ryanmaxey6>
  * @author Hannah Nguyen <hanguyen>
+ * @version December 11, 2020
  *
  * @param <K> The key
  * @param <V> The value
@@ -26,6 +27,8 @@ public class HashTable<K, V extends SequenceBundle> {
     /**
      * Creates a new HashTable with the given capacity and a MemoryManager for
      * accessing keys in memory.
+     *
+     * @param theClass The class of the V object
      * @param capacity The capacity of the HashTable
      * @param m The MemoryManager to use
      */
@@ -41,32 +44,32 @@ public class HashTable<K, V extends SequenceBundle> {
     /**
      * Hash the given string for the given table capacity.
      * @param s The string to hash
-     * @param M The capacity of the hash table
+     * @param m The capacity of the hash table
      * @return A long representing the index to place the object with the given
      * string in the hash table
      */
-    private long sfold(String s, int M)
+    private long sfold(String s, int m)
     {
         int intLength = s.length() / 4;
         long sum = 0;
         for (int j = 0; j < intLength; j++) {
-          char c[] = s.substring(j * 4, (j * 4) + 4).toCharArray();
-          long mult = 1;
-          for (int k = 0; k < c.length; k++) {
-            sum += c[k] * mult;
-            mult *= 256;
-          }
+            char[] c = s.substring(j * 4, (j * 4) + 4).toCharArray();
+            long mult = 1;
+            for (int k = 0; k < c.length; k++) {
+                sum += c[k] * mult;
+                mult *= 256;
+            }
         }
 
-        char c[] = s.substring(intLength * 4).toCharArray();
+        char[] c = s.substring(intLength * 4).toCharArray();
         long mult = 1;
         for (int k = 0; k < c.length; k++) {
-          sum += c[k] * mult;
-          mult *= 256;
+            sum += c[k] * mult;
+            mult *= 256;
         }
 
         sum = (sum * sum) >> 8;
-        return(Math.abs(sum) % M);
+        return (Math.abs(sum) % m);
     }
 
     /**
@@ -109,7 +112,7 @@ public class HashTable<K, V extends SequenceBundle> {
                 // if it does, then we should tomb-stone it
                 Handle idHandle = table[pos].getIDHandle();
                 byte[] seqId = manager.getSeq(idHandle);
-                String seqIdString = ASCIIConverter.BinToACGT(seqId,
+                String seqIdString = ASCIIConverter.binToACGT(seqId,
                     idHandle.getSequenceLength());
                 if (seqIdString.equals(key.toString()))
                 {
@@ -150,7 +153,7 @@ public class HashTable<K, V extends SequenceBundle> {
                 // if it does, then we have found the entry
                 Handle idHandle = table[pos].getIDHandle();
                 byte[] seqId = manager.getSeq(idHandle);
-                String seqIdString = ASCIIConverter.BinToACGT(seqId,
+                String seqIdString = ASCIIConverter.binToACGT(seqId,
                     idHandle.getSequenceLength());
                 if (seqIdString.equals(key.toString()))
                 {
@@ -198,7 +201,7 @@ public class HashTable<K, V extends SequenceBundle> {
                 // if it does, then we should reject the insertion
                 Handle idHandle = table[pos].getIDHandle();
                 byte[] seqId = manager.getSeq(idHandle);
-                String seqIdString = ASCIIConverter.BinToACGT(seqId,
+                String seqIdString = ASCIIConverter.binToACGT(seqId,
                     idHandle.getSequenceLength());
                 if (seqIdString.equals(key.toString()))
                 {
@@ -253,7 +256,7 @@ public class HashTable<K, V extends SequenceBundle> {
                 // if it does, then we should reject the insertion
                 Handle idHandle = table[pos].getIDHandle();
                 byte[] seqId = manager.getSeq(idHandle);
-                String seqIdString = ASCIIConverter.BinToACGT(seqId,
+                String seqIdString = ASCIIConverter.binToACGT(seqId,
                     idHandle.getSequenceLength());
                 if (seqIdString.equals(key.toString()))
                 {
@@ -286,7 +289,7 @@ public class HashTable<K, V extends SequenceBundle> {
                 int lengthInLetters = table[h].getIDHandle()
                     .getSequenceLength();
                 System.out.printf("%s: hash slot [%d]\n",
-                    ASCIIConverter.BinToACGT(seq, lengthInLetters), h);
+                    ASCIIConverter.binToACGT(seq, lengthInLetters), h);
             }
         }
         return;

@@ -7,35 +7,26 @@ import java.io.IOException;
  *
  * @author Ryan Maxey <ryanmaxey6>
  * @author Hannah Nguyen <hanguyen>
+ * @version December 11, 2020
+ *
+ * @param <K> The key class of a HashTable should always be a string.
+ * @param <V> The value class of a HashTable should always be a SequenceBundle.
  */
-public class HashTableTest<K, V extends SequenceBundle>
-	extends TestCase {
+public class HashTableTest<K, V extends SequenceBundle> extends TestCase {
 
     private HashTable<String, SequenceBundle> hashTable;
-    private MemoryManager manager;
-
-    public void setUp() throws IOException
-    {
-        // manager = new MemoryManager();
-    	int size = 32;
-        MemoryManager manager = new MemoryManager("memoryfile.bin", size);
-        hashTable = new HashTable<String, SequenceBundle>(SequenceBundle.class,
-        		size, manager);
-
-    }
 
     /**
-     * tests insert
-     * @throws IOException
+     * The setup of this test will instantiate the hash table, for testing, and
+     * its corresponding memory manager.
      */
-    public void testInsert() throws IOException {
+    public void setUp() throws IOException
+    {
+        int size = 32;
+        MemoryManager mem = new MemoryManager("memoryfile.bin", size);
+        hashTable = new HashTable<String, SequenceBundle>(SequenceBundle.class,
+            size, mem);
 
-//    	String seqId = "AAA";
-//    	SequenceBundle val;
-//    	val = new SequenceBundle(false, null,
-//                null);
-//        hashTable.insert(seqId, val);
-        //assertTrue(hashTable.canInsert(seqId) == false);
     }
 
     /**
@@ -46,10 +37,10 @@ public class HashTableTest<K, V extends SequenceBundle>
         String key = "";
         String seqId = "AAA";
         SequenceBundle removeVal = hashTable.remove(key);
-        assertEquals(removeVal,null);
+        assertEquals(removeVal, null);
         removeVal = hashTable.remove(seqId);
-        assertEquals(removeVal,null);
+        assertEquals(removeVal, null);
 
-        assertTrue(hashTable.size() == 0);
+        assertEquals(hashTable.size(), 0);
     }
 }

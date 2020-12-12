@@ -4,6 +4,7 @@
  *
  * @author Ryan Maxey <ryanmaxey6>
  * @author Hannah Nguyen <hanguyen>
+ * @version December 11, 2020
  */
 public class Handle {
 

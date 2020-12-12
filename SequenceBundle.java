@@ -1,16 +1,18 @@
 /**
  * A SequenceBundle has Handles for the sequence ID and the actual sequence.
- * It also contains a tomb stone flag to indicate if the bundle has been 
+ * It also contains a tomb stone flag to indicate if the bundle has been
  * tomb-stoned.
- * @author ryanm
  *
+ * @author Ryan Maxey <ryanmaxey6>
+ * @author Hannah Nguyen <hanguyen>
+ * @version December 11, 2020
  */
 public class SequenceBundle {
 
     private boolean tombStone;
     private Handle idHandle;
     private Handle sequenceHandle;
-    
+
     /**
      * Creates a SequenceBundle with Handles for the sequence ID and sequence
      * @param t True if this bundle has been tomb-stoned; false otherwise
@@ -23,7 +25,7 @@ public class SequenceBundle {
         idHandle = id;
         sequenceHandle = sequence;
     }
-    
+
     /**
      * Gets the flag indicating if this bundle has been tomb-stoned
      * @return True if the bundle is tomb-stoned; false otherwise
@@ -32,7 +34,7 @@ public class SequenceBundle {
     {
         return tombStone;
     }
-    
+
     /**
      * Sets the flag indicating if this bundle is tomb-stoned
      * @param t The boolean representing the tomb stone
@@ -41,7 +43,7 @@ public class SequenceBundle {
     {
         tombStone = t;
     }
-    
+
     /**
      * Gets the Handle for the sequence ID
      * @return The Handle for the sequence ID
@@ -50,7 +52,7 @@ public class SequenceBundle {
     {
         return idHandle;
     }
-    
+
     /**
      * Sets the Handle for the sequence ID
      * @param id The new Handle for the sequence ID
@@ -59,7 +61,7 @@ public class SequenceBundle {
     {
         idHandle = id;
     }
-    
+
     /**
      * Gets the Handle for the actual sequence
      * @return The Handle for the actual sequence
@@ -68,7 +70,7 @@ public class SequenceBundle {
     {
         return sequenceHandle;
     }
-    
+
     /**
      * Sets the Handle for the sequence
      * @param sequence The new Handle for the sequence
@@ -77,5 +79,5 @@ public class SequenceBundle {
     {
         sequenceHandle = sequence;
     }
-    
+
 }

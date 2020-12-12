@@ -4,6 +4,7 @@
  *
  * @author Ryan Maxey <ryanmaxey6>
  * @author Hannah Nguyen <hanguyen>
+ * @version December 11, 2020
  */
 public class ASCIIConverter {
 
@@ -12,7 +13,7 @@ public class ASCIIConverter {
      * @param sequence The DNA sequence as a string
      * @return The DNA sequence as a byte[]
      */
-    public static byte[] ACGTtoBin(String sequence)
+    public static byte[] acgtToBin(String sequence)
     {
         int bitsNeeded = sequence.length() * 2;
         int numBytes = (bitsNeeded / 8);
@@ -65,7 +66,7 @@ public class ASCIIConverter {
      * @param seqLength The length of the DNA sequence in characters
      * @return The DNA sequence as a string
      */
-    public static String BinToACGT(byte[] sequence, int seqLength)
+    public static String binToACGT(byte[] sequence, int seqLength)
     {
         if ((seqLength * 2) > sequence.length * 8)
         {

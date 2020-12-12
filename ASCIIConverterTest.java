@@ -5,6 +5,7 @@ import student.TestCase;
  *
  * @author Ryan Maxey <ryanmaxey6>
  * @author Hannah Nguyen <hanguyen>
+ * @version December 11, 2020
  */
 public class ASCIIConverterTest extends TestCase {
 
@@ -14,7 +15,7 @@ public class ASCIIConverterTest extends TestCase {
     public void testACGTtoBin()
     {
         String sequence = "CCCCATGGACGT";
-        byte[] result = ASCIIConverter.ACGTtoBin(sequence);
+        byte[] result = ASCIIConverter.acgtToBin(sequence);
         for (int i = 0; i < result.length; i++)
         {
             System.out.printf("0x%02X\n", result[i]);
@@ -34,7 +35,7 @@ public class ASCIIConverterTest extends TestCase {
         byte[] bytes = new byte[2];
         bytes[0] = b1;
         bytes[1] = b2;
-        String result = ASCIIConverter.BinToACGT(bytes, 8);
+        String result = ASCIIConverter.binToACGT(bytes, 8);
         System.out.println(result);
         assertEquals("ACGTATCG", result);
 
@@ -43,7 +44,7 @@ public class ASCIIConverterTest extends TestCase {
         bytes[0] = b1;
         bytes[1] = b2;
         bytes[2] = b3;
-        result = ASCIIConverter.BinToACGT(bytes, 10);
+        result = ASCIIConverter.binToACGT(bytes, 10);
         System.out.println(result);
         assertEquals("ACGTATCGAT", result);
     }
