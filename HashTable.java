@@ -2,8 +2,12 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 
 /**
- * A hash table with keys and values
- * @author ryanm
+ * A hash table with keys and values to support searches by
+ * sequence identifier. It has a fixed capacity and manager object
+ * for sequenceID and sequence
+ *
+ * @author Ryan Maxey <ryanmaxey6>
+ * @author Hannah Nguyen <hanguyen>
  *
  * @param <K> The key
  * @param <V> The value
@@ -240,6 +244,7 @@ public class HashTable<K, V extends SequenceBundle> {
                 // found the first tomb stone
                 foundTombStone = true;
                 tombStonePos = pos;
+                break;
             }
             else if (!table[pos].getTombStone())
             {

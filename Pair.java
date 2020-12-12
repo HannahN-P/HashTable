@@ -1,3 +1,11 @@
+/**
+ * Pair to get and set offset of free block to be used in 
+ * MemoryManager
+ * 
+ *  @author Hannah Nguyen <hanguyen>
+ *  @author Ryan Maxey <ryanmaxey6>
+ *  
+ */
 public class Pair {
 
     private int fileOffset;

@@ -1,8 +1,9 @@
 /**
  * ASCIIConverter converts between a binary DNA sequence and a DNA sequence
  * represented as characters.
- * @author ryanm
  *
+ * @author Ryan Maxey <ryanmaxey6>
+ * @author Hannah Nguyen <hanguyen>
  */
 public class ASCIIConverter {
 

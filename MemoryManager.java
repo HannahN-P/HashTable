@@ -3,7 +3,7 @@ import java.util.*;
 
 // -------------------------------------------------------------------------
 /**
- *  MemoryManager is the main class of this file.  It manages the memory file
+ *  MemoryManager is the main class of this file. It manages the memory file
  *  by writing to it.  Most of its functions end up being called by the
  *  DNAdbase class.
  *
@@ -21,6 +21,10 @@ public class MemoryManager
     /**
      * The constructor sets up an instance of the MemoryManager by setting up
      * the memory file and doubly linked list of free blocks.
+     * 
+     * @param filename 	name of the file used by the memory manager to
+     * 					store strings
+     * @param size 		size of the hash table
      * @throws IOException
      */
     public MemoryManager(String filename, int size) throws IOException
@@ -43,12 +47,7 @@ public class MemoryManager
         // The function will jump to the beginning of a sequence and read in
         // the sequence bytes.
         memory.seek(seqHandle.getFileLocation());
-        int bitsNeeded = seqHandle.getSequenceLength() * 2;
-        int numBytes = (bitsNeeded / 8);
-        if (bitsNeeded % 8 != 0)
-        {
-            numBytes += 1;
-        }
+        int numBytes = byteNeeded(seqHandle.getSequenceLength());
         byte[] result = new byte[numBytes];
 
         memory.read(result);
@@ -61,7 +60,8 @@ public class MemoryManager
      * The function essentially seeks a specified location in the
      * RandomAccessFile and then appends or overwrites to the file.
      *
-     * @param sequence : The sequence (as a string) to be inserted into the file
+     * @param sequence : The sequence (as a string) to be inserted into the 
+     * file
      * @param loc : This integer should be the file location of the
      *              corresponding sequence parameter
      * @return loc + sequence : This is the current file location after writing
@@ -110,18 +110,17 @@ public class MemoryManager
         }
         else {
             Pair bestFit = null;
-            int bits = str.length() * 2;
-            int bytes = bits / 8;
-            if (bits % 8 != 0) {
-                bytes++;
-            }
+            int bytes = byteNeeded(str.length());
 
             // The method searches for a free block that best fits the sequence
             // to be inserted.
             for (Pair block : list) {
-                if (block.getLength() > bytes && (bestFit == null ||
+                if (block.getLength() >= bytes && (bestFit == null ||
                     block.getLength() < bestFit.getLength())) {
                     bestFit = block;
+                    if (block.getLength() == bytes) {
+                    	break;
+                    }
                 }
             }
 
@@ -131,13 +130,9 @@ public class MemoryManager
             if (bestFit != null) {
                 // The best fit free block is then updated.
                 memLoc = insertString(str, bestFit.getFileOffset());
-                int bitsNeeded = str.length() * 2;
-                int numBytes = bitsNeeded / 8;
-                if (bitsNeeded % 8 != 0) {
-                    numBytes++;
-                }
-                bestFit.setFileOffset(bestFit.getFileOffset() + numBytes);
-                bestFit.setLength(bestFit.getLength() - numBytes);
+
+                bestFit.setFileOffset(bestFit.getFileOffset() + bytes);
+                bestFit.setLength(bestFit.getLength() - bytes);
             }
             else {
                 memLoc = insertString(str, (int)memory.length());
@@ -149,6 +144,7 @@ public class MemoryManager
         for (Pair block : list) {
             if (block.getLength() <= 0) {
                 list.remove(block);
+                break;
             }
         }
 
@@ -177,12 +173,8 @@ public class MemoryManager
         // The following segment will retrieve the string to be removed.
         // The string will be converted to a byte array.
         memory.seek(seqHandle.getFileLocation());
-        int bitsNeeded = seqHandle.getSequenceLength() * 2;
-        int numBytes = (bitsNeeded / 8);
-        if (bitsNeeded % 8 != 0)
-        {
-            numBytes += 1;
-        }
+        int numBytes = byteNeeded(seqHandle.getSequenceLength());
+        
         byte[] result = new byte[numBytes];
         memory.read(result);
 
@@ -229,7 +221,8 @@ public class MemoryManager
         }
 
         Pair lastFree = list.get(list.size() - 1);
-        if (lastFree.getFileOffset() + lastFree.getLength() == memory.length()) {
+        if ((lastFree.getFileOffset() + 
+        		lastFree.getLength()) == memory.length()) {
             list.remove(lastFree);
             memory.setLength(memory.length() - lastFree.getLength());
         }
@@ -254,6 +247,16 @@ public class MemoryManager
                 + "Size %d bytes\n", l + 1, list.get(l).getFileOffset(),
                 list.get(l).getLength());
         }
+    }
+
+    private int byteNeeded(int len) {
+    	int bitsNeeded = len * 2;
+        int numBytes = (bitsNeeded / 8);
+        if (bitsNeeded % 8 != 0)
+        {
+            numBytes += 1;
+        }
+        return numBytes;
     }
 
 }

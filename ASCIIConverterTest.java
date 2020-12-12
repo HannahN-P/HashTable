@@ -2,8 +2,9 @@ import student.TestCase;
 
 /**
  * Tests the methods of ASCIIConverter.
- * @author ryanm
  *
+ * @author Ryan Maxey <ryanmaxey6>
+ * @author Hannah Nguyen <hanguyen>
  */
 public class ASCIIConverterTest extends TestCase {
 
@@ -22,7 +23,7 @@ public class ASCIIConverterTest extends TestCase {
         assertEquals(0b00111010, result[1]);
         assertEquals(0b00011011, result[2]);
     }
-    
+
     /**
      * tests BinToACGT
      */
@@ -36,7 +37,7 @@ public class ASCIIConverterTest extends TestCase {
         String result = ASCIIConverter.BinToACGT(bytes, 8);
         System.out.println(result);
         assertEquals("ACGTATCG", result);
-        
+
         byte b3 = 0b00110000;
         bytes = new byte[3];
         bytes[0] = b1;
@@ -46,5 +47,5 @@ public class ASCIIConverterTest extends TestCase {
         System.out.println(result);
         assertEquals("ACGTATCGAT", result);
     }
-    
+
 }

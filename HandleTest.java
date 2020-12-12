@@ -2,13 +2,14 @@ import student.TestCase;
 
 /**
  * Tests the methods of Handle.
- * @author ryanm
  *
+ * @author Ryan Maxey <ryanmaxey6>
+ * @author Hannah Nguyen <hanguyen>
  */
 public class HandleTest extends TestCase {
 
     private Handle handle;
-    
+
     /**
      * Creates a new handle for testing.
      */
@@ -16,7 +17,7 @@ public class HandleTest extends TestCase {
     {
         handle = new Handle(100, 50);
     }
-    
+
     /**
      * tests getFileLocation and setFileLocation
      */
@@ -26,7 +27,7 @@ public class HandleTest extends TestCase {
         handle.setFileLocation(125);
         assertTrue(handle.getFileLocation() == 125);
     }
-    
+
     /**
      * tests getSequenceLength and setSequenceLength
      */
@@ -36,5 +37,5 @@ public class HandleTest extends TestCase {
         handle.setSequenceLength(40);
         assertTrue(handle.getSequenceLength() == 40);
     }
-    
+
 }

@@ -1,10 +1,15 @@
-import static org.junit.Assert.*;
+import student.TestCase;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import student.TestCase;
 
+/**
+ * Tests the methods of DNAdbase.
+ *
+ * @author Ryan Maxey <ryanmaxey6>
+ * @author Hannah Nguyen <hanguyen>
+ */
 public class DNAdbaseTest extends TestCase
 {
 
@@ -20,7 +25,7 @@ public class DNAdbaseTest extends TestCase
 
     public void testInvalid() throws IOException
     {
-        assertFalse(dbase != null);
+        assertTrue(dbase != null);
 
         String[] args = {"invalid.txt", "invalid_out.txt", "10",
             "invalid_mem.bin"};
@@ -38,8 +43,8 @@ public class DNAdbaseTest extends TestCase
         assertTrue(outContent.toString().contains("SequenceID AACG not found"));
         // The following assertions check the error messages printed from
         // HashTable's canInsert().
-        assertTrue(outContent.toString().contains("Bucket full. Sequence A "
-            + "could not be inserted"));
+        assertTrue(outContent.toString().contains("hashtable size must be a"
+            + " multiple of 32"));
         assertTrue(outContent.toString().contains("SequenceID C exists"));
 
         // The memory and hash files are cleaned up.
@@ -106,7 +111,7 @@ public class DNAdbaseTest extends TestCase
         assertTrue(outContent.toString().contains("Free Block List: none"));
         assertTrue(outContent.toString().contains("Sequence Removed T:\nCA"));
         assertTrue(outContent.toString().contains(
-            "[Block 1] Starting Byte Location: 0, Size 1 bytes"));
+            "[Block 1] Starting Byte Location: 0, Size 2 bytes"));
 
         // The memory and hash files are cleaned up.
         File memory = new File("remove_mem.bin");

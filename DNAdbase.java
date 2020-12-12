@@ -1,6 +1,34 @@
 import java.io.*;
 import java.util.Arrays;
 
+//On my honor:
+//
+//- I have not used source code obtained from another student,
+//or any other unauthorized source, either modified or
+//unmodified.
+//
+//- All source code and documentation used in my program is
+//either my original work, or was derived by me from the
+//source code published in the textbook for this course.
+//
+//- I have not discussed coding details about this project with
+//anyone other than my partner (in the case of a joint
+//submission), instructor, ACM/UPE tutors or the TAs assigned
+//to this course. I understand that I may discuss the concepts
+//of this program with other students, and that another student
+//may help me debug my program so long as neither of us writes
+//anything during the discussion or modifies any computer file
+//during the discussion. I have violated neither the spirit nor
+//letter of this restriction.
+
+/**
+ * DNAdbase is the main class of this file.
+ * It has main function that calls on helper methods from other files
+ *
+ * @author Ryan Maxey <ryanmaxey6>
+ * @author Hannah Nguyen <hanguyen>
+ * @version December 11, 2020
+ */
 public class DNAdbase
 {
     //~ Fields ................................................................
@@ -11,8 +39,16 @@ public class DNAdbase
     //private static int size;
 
     //~ Public  Methods .......................................................
+	/**
+	 * main() is the main function that calls on helper methods from other
+	 * files, based on commands passed through the input file.
+	 *
+	 * @param args : arguments in order
+	 * 		<command file> <hash file> <max size of hash table> <memory file>
+	 * @throws IOException
+	 */
     public static void main(String[] args) throws IOException {
-        // The expeted argument order for the DNAdbase is:
+        // The expected argument order for the DNAdbase is:
         // <command file> <hash file> <max size of hash table> <memory file>
         File file = new File(args[0]);
         File output = new File(args[1]);
@@ -63,16 +99,17 @@ public class DNAdbase
                 // into the hash table before the sequence ID is inserted into
                 // the memory file.
                 if (!table.canInsert(sequenceId)) {
-                    return;
-                }
-                Handle idHandle = memory.insertSeq(sequenceId, size);
-                Handle seqHandle = memory.insertSeq(sequence, size);
+                    // skip
+                } else {
+	                Handle idHandle = memory.insertSeq(sequenceId, size);
+	                Handle seqHandle = memory.insertSeq(sequence, size);
 
-                // A SequenceBundle object, containing the two handles, is
-                // created and inserted into the hash table.
-                SequenceBundle val = new SequenceBundle(false, idHandle,
-                    seqHandle);
-                table.insert(sequenceId, val);
+	                // A SequenceBundle object, containing the two handles, is
+	                // created and inserted into the hash table.
+	                SequenceBundle val = new SequenceBundle(false, idHandle,
+	                    seqHandle);
+	                table.insert(sequenceId, val);
+                }
             }
             else if (command.length > 0 && command[0].equals("remove")) {
                 String sequenceID = command[1];
@@ -102,7 +139,7 @@ public class DNAdbase
                 // All stored sequences are printed out.
                 System.out.print("Sequence IDs:");
                 if (table.size() == 0) {
-                    System.out.print(" none");
+                    //System.out.print(" none");
                 }
                 System.out.println();
                 table.printTable();
